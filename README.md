@@ -3,10 +3,10 @@
 This web application (backend) is just a simple application to test and to learn how to make it using MERN.
 
 # MERN
-## MongoDB - I used this as my database.
-## Express - I used this as my routing/backend service.
-## React - I used it as a framework of my frontend service.
-## NodeJS - I used it to server my application.
+ -  MongoDB - I used this as my database.
+ -  Express - I used this as my routing/backend service.
+ -  React - I used it as a framework of my frontend service.
+ -  NodeJS - I used it to server my application.
 
 
 # Dependencies
