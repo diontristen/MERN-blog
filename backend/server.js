@@ -68,7 +68,9 @@ app.post('/login' , (req, res) => {
         if (users === null) {
             res.json({
                 status: false,
-                message: "Username registered not registered."
+                error: {
+                    username: "Username registered not registered."
+                }
             })
         } else {
           if ( await bcrypt.compare(req.body.password, users.password)) {
@@ -80,7 +82,9 @@ app.post('/login' , (req, res) => {
           } else {
               res.json({
                   status: false,
-                  message: "Incorrect password."
+                  error: {
+                    password: "Incorrect password."
+                  }
               })
           }
         }
