@@ -7,11 +7,27 @@ let validator = require('../library/lib.validation')
 
 
 
-router.route('/').get((req, res) => {
-    res.json({
-        status: true,
-        data: req.session.user_id
-    })
+router.route('/get/user').get((req, res) => {
+    if (req.session.user_id === undefined) {
+        res.json({
+            status: false,
+            message: "You must be logged in to view this page."
+        })
+    } else {
+        User.findById(req.session.user_id)
+        .then(user => {
+            res.json({
+                status: true,
+                data: user
+            })
+        })
+        .catch(err => {
+            res.json({
+                status: false,
+                message: "System Error"
+            })
+        })
+    }
 })
 
 
@@ -41,7 +57,6 @@ router.route('/getByUsername/:username').get((req,res) => {
     data = new RegExp(req.params.username, 'i') 
     User.find({username:data})
     .then(users => {
-        console.log(users)
         res.json({
             status: true,
             users: users

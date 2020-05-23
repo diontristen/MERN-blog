@@ -7,12 +7,12 @@ require('dotenv').config()
  * Core Packages
  */
 const express = require('express')
+const flash  = require('express-flash')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const session = require('express-session')
 const bodyParser = require('body-parser')
 let validator = require('./library/lib.validation')
-
+const jwt = require('jsonwebtoken')
 
 /**
  * Router Directories
@@ -28,11 +28,8 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave:false,
-    saveUninitialized: true
-}))
+app.use(flash())
+
 
 /**
  * Use Routers
@@ -56,7 +53,18 @@ mongoConnection.once('open', () => {
 let User = require('./models/models.user')
 const bcrypt = require('bcrypt')
 
-app.post('/login' , (req, res) => {
+const auth = require('./middleware/middleware.auth')
+
+
+app.get('/test', auth, function (req, res)  {
+    res.json({
+        status: true,
+        data: req.token
+    })
+})
+
+
+app.post('/login' , async (req, res) => {
     bResult = validator.isEmpty(req.body, "Username")
     if (bResult.status == false) {
         res.json(bResult)
@@ -74,10 +82,10 @@ app.post('/login' , (req, res) => {
             })
         } else {
           if ( await bcrypt.compare(req.body.password, users.password)) {
-            req.session.user_id = users._id;
+            const token = jwt.sign({id: users._id}, process.env.SECRET_KEY)
             res.json({
                 status: true,
-                message: "Welcome Back!"
+                token
             })
           } else {
               res.json({
@@ -94,9 +102,6 @@ app.post('/login' , (req, res) => {
         message: error
     }))
 })
-
-
-
 
 
 /**
