@@ -56,13 +56,6 @@ const bcrypt = require('bcrypt')
 const auth = require('./middleware/middleware.auth')
 
 
-app.get('/test', auth, function (req, res)  {
-    res.json({
-        status: true,
-        data: req.token
-    })
-})
-
 
 app.post('/login' , async (req, res) => {
     bResult = validator.isEmpty(req.body, "Username")

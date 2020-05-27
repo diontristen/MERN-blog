@@ -1,5 +1,5 @@
 module.exports = {
-    isEmpty: function(data, name) {
+    isEmpty: function(data) {
         error = {}
         for (key in data) {
            value = data[key]
@@ -7,6 +7,7 @@ module.exports = {
                 error[key] = key + " cannot be empty"
            } 
         }
+
         if (Object.keys(error).length != 0) {
             let feedback = {
                 status: false,
