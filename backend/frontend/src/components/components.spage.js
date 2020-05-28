@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import SearchBig from './components.bigsearch'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 
 export default class SearchPage extends Component {
@@ -13,6 +14,7 @@ export default class SearchPage extends Component {
         this.handleScroll = this.handleScroll.bind(this)
         this.setScroll = this.setScroll.bind(this)
         this.onLoad = this.onLoad.bind(this)
+        this.onLogout = this.onLogout.bind(this)
 
 
         this.state = {
@@ -20,7 +22,9 @@ export default class SearchPage extends Component {
             name: 'NaN',
             scrolling: true,
             mywall: '',
-            token: localStorage.getItem('auth-token')
+            token: localStorage.getItem('auth-token'),
+            goOut: null,
+            goProfile: null
         }
     }
 
@@ -36,7 +40,9 @@ export default class SearchPage extends Component {
         let token = this.state.token
         
         if (!token) {
-            window.location = '/'
+            this.setState({
+                goOut: '/'
+            })
             return 
         }
 
@@ -47,7 +53,9 @@ export default class SearchPage extends Component {
         .then(res => res.json())
         .then(json => {
             if (json.status  === false) {
-                window.location = "/"
+                this.setState({
+                    goOut: '/'
+                })
             } else {
                 parent.setState({
                     mywall: '/profile/' + json.data.username
@@ -77,7 +85,9 @@ export default class SearchPage extends Component {
     }
     myWall(e) {
         e.preventDefault();
-        window.location = this.state.mywall
+        this.setState({
+            goProfile: this.state.mywall
+        })
     }
 
 
@@ -98,11 +108,19 @@ export default class SearchPage extends Component {
 
     onLogout() {
         localStorage.removeItem("auth-token")
-        window.location = "/"
+        this.setState({
+            goOut: '/'
+        })
     }
 
 
     render() {
+        if (this.state.goOut) {
+            return <Redirect to={this.state.goOut} />
+        } 
+        if (this.state.goProfile) {
+            return <Redirect to={this.state.goProfile} />
+        }
         return (
           <div>
               <div className="container-fluid"> 

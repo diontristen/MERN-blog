@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const mEnv = require('../middleware/middleware.env')
 
 const auth = (req, res, next) => {
     try {
@@ -9,7 +10,7 @@ const auth = (req, res, next) => {
         return res.status(401)
         .json({status: false, message:"No authentication token, authorization denied."})
 
-        const verified = jwt.verify(token, process.env.SECRET_KEY)
+        const verified = jwt.verify(token, mEnv.SECRET_KEY)
 
         if (!verified)
         return res.status(401)

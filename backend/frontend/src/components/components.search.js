@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 
 const List = liv => (
@@ -35,12 +36,15 @@ class Search extends Component {
         this.state = {
             outputCard: 'is-hidden',
             searchVal: '',
-            users: []
+            users: [],
+            goProfile: null
         }
     }
 
     onClick(data) {
-        window.location = '/profile/' + data
+        this.setState({
+            goProfile: '/profile/' + data
+        })
     }
 
    async onChange(e) {
@@ -70,9 +74,7 @@ class Search extends Component {
                     users: json.data,
                     outputCard: 'card'
                 })
-            } else {
-                // window.location = '/'
-            }
+            } 
         })
         } else {
             parent.setState({
@@ -99,6 +101,9 @@ class Search extends Component {
         document.getElementById('searchVal').value = ''
     }
     render() {
+        if (this.state.goProfile) {
+            return <Redirect to={this.state.goProfile} />
+        }
         return (
         <div>
             <div className="card  is-mt-10">

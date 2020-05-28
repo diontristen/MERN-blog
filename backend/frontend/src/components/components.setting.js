@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Swal from 'sweetalert2'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 class Setting extends Component {
 
@@ -35,7 +36,8 @@ class Setting extends Component {
             password2Class: 'input is-small',
             oldpasswordErr: '',
             oldpasswordClass: 'input is-small',
-            oldpassword2Class: 'input is-small'
+            oldpassword2Class: 'input is-small',
+            goOut: null
 
         } 
     }
@@ -119,7 +121,9 @@ class Setting extends Component {
                         timer: 2000,
                         showConfirmButton: false,
                     }).then((result)=> {
-                        window.location = "/"
+                        this.setState({
+                            goOut: '/'
+                        })
                     })
                 } else {
                     Swal.fire(
@@ -230,6 +234,9 @@ class Setting extends Component {
     }
 
   render() {
+    if (this.state.goOut) {
+        return <Redirect to={this.state.goOut} />
+    }
     return (
         <div id="tabs-with-content">
           <div className="tabs is-centered">

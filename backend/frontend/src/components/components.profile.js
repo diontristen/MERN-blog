@@ -4,6 +4,7 @@ import { BallClipRotateMultiple } from 'react-pure-loaders';
 import Swal from 'sweetalert2'
 import Search from './components.search'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 const List = liv => (
     <article id={liv.data._id + "-main"} className="media">
@@ -88,6 +89,9 @@ export default class HomePage extends Component {
             textareaClass: 'media',
             mywall: '/profile/',
             scrolling: true,
+            notLogged: null,
+            goProfile: null,
+
         }
 
   
@@ -139,7 +143,9 @@ export default class HomePage extends Component {
 
     myWall(e) {
         e.preventDefault();
-        window.location = this.state.mywall
+        this.setState({
+            goProfile: this.state.mywall
+        })
     }
     onCheck() {
         if (this.state.currentid !== this.state.id) {
@@ -286,7 +292,10 @@ export default class HomePage extends Component {
                 this.getCount()
 
             } else {
-                window.location = '/'
+                this.setState({
+                    notLogged: '/'
+                })
+                return 
             }
         })
     }
@@ -295,7 +304,10 @@ export default class HomePage extends Component {
         let parent = this
         let token = this.state.token
         if (!token) {
-            window.location = '/'
+            this.setState({
+                notLogged: '/'
+            })
+            return 
             return 
         }
         fetch(myConstClass.API_URL + '/users/get/own', {
@@ -305,7 +317,10 @@ export default class HomePage extends Component {
         .then(res => res.json())
         .then(json => {
             if (json.status  === false) {
-                window.location = "/"
+                this.setState({
+                    notLogged: '/'
+                })
+                return 
             } else {
                 parent.setState({
                     loading: false,
@@ -380,7 +395,10 @@ export default class HomePage extends Component {
 
     onLogout() {
         localStorage.removeItem("auth-token")
-        window.location = "/"
+        this.setState({
+            notLogged: '/'
+        })
+        return 
     }
 
     async onDelete(id) {
@@ -430,6 +448,12 @@ export default class HomePage extends Component {
     }
 
     render() {
+        if (this.state.notLogged) {
+            return <Redirect to={this.state.notLogged} />
+        }
+        if (this.state.goProfile) {
+            return <Redirect to={this.state.goProfile} />
+        }
         return (
             
             <div className="container is-fluid ">

@@ -4,6 +4,8 @@ import { BallClipRotateMultiple } from 'react-pure-loaders';
 import Swal from 'sweetalert2'
 import Search from './components.search'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
+
 
 const List = liv => (
     <article id={liv.data._id + "-main"} className="media">
@@ -15,7 +17,7 @@ const List = liv => (
     <div className="media-content">
         <div className="content">
         <p>
-<strong>{liv.data.name}</strong> <small className="is-italic has-text-link is-new-link" name={liv.data.user_id}>@{liv.data.username} | </small> <small className="is-too-small">{liv.time}</small>
+            <strong>{liv.data.name}</strong> <Link to={'/profile/' + liv.data.username}> <small className="is-italic has-text-link is-new-link" name={liv.data.user_id}>@{liv.data.username} | </small> </Link> <small className="is-too-small">{liv.time}</small>
             <br/>
             {liv.data.message}
         </p>
@@ -51,10 +53,8 @@ export default class HomePage extends Component {
         this.onDelete = this.onDelete.bind(this)
         this.onUpdate = this.onUpdate.bind(this)
         this.onModalClose = this.onModalClose.bind(this)
-        this.onLoadSearch = this.onLoadSearch.bind(this)
-        this.myWall = this.myWall.bind(this)
-        this.onFollow = this.onFollow.bind(this)
         this.handleScroll = this.handleScroll.bind(this)
+        this.onFollow = this.onFollow.bind(this)
 
         
 
@@ -62,8 +62,6 @@ export default class HomePage extends Component {
         this.state = {
             username: '',
             name: '',
-            id: '',
-            currentid: '',
             count: '',
             postMessage: '',
             postMessageClass: 'textarea',
@@ -82,12 +80,10 @@ export default class HomePage extends Component {
             messages :[],
             skip: 0,
             limit: 10,
-            secondClass: 'column is-2 is-mt-5',
-            hiddenClass: 'is-hidden',
-            mainClass: 'column is-5 is-paddingles is-mt-5',
-            textareaClass: 'media',
             mywall: '/profile/',
+            user_id: '',
             scrolling: true,
+            notLogged: null,
         }
 
   
@@ -95,59 +91,9 @@ export default class HomePage extends Component {
 
     componentDidMount() {
         window.addEventListener('scroll', this.handleScroll)
-
         this.onLoad()
-        this.onLoadSearch()
     }
 
-    handleScroll(e) {
-        let windowRelativeBottom = document.documentElement.getBoundingClientRect().bottom
-        let windowRelativeScrolled = document.documentElement.clientHeight + 100
-        if ((windowRelativeBottom <= windowRelativeScrolled) && this.state.scrolling === true) {
-            this.setState({
-                scrolling: false,
-                skip: (this.state.skip) + 10
-            })
-            this.onFollow()
-        } else if (((window.innerHeight + window.scrollY) >= (window.innerHeight + window.scrollY - 0.085)) && this.state.scrolling === false) {
-            // this.refs.child.setBottom()
-        }
-    }
-    async onFollow() {
-        let parent = this
-        let body =     {skip: this.state.skip, 
-            limit: this.state.limit}
-        await fetch(myConstClass.API_URL + '/messages/get/all', {
-            method: "POST",
-            headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
-            body:JSON.stringify(body)
-        })
-        .then(res => res.json())
-        .then(json => {
-            if (json.status !== false) {
-                for (let key in json.data) {
-                    parent.state.messages.push(json.data[key])
-                }
-                parent.setState(prevState => ({
-                    messages: prevState.messages,
-                    scrolling: true
-                }))
-                // parent.setState({messages: json.data})
-            }
-        })
-    }
-
-    myWall(e) {
-        e.preventDefault();
-        window.location = this.state.mywall
-    }
-    onCheck() {
-        if (this.state.currentid !== this.state.id) {
-            this.setState({
-                textareaClass: 'is-hidden'
-            })
-        }
-    }
 
     onChangeInputClass(e) {
         let sClass = e.target.id + "Class"
@@ -210,6 +156,7 @@ export default class HomePage extends Component {
             document.getElementById(getElement).value = "";
             this.showResponse('Message has been ' + suffix)
             } 
+        
         })
     }
 
@@ -235,12 +182,52 @@ export default class HomePage extends Component {
         }
     }
 
+    handleScroll(e) {
+        let windowRelativeBottom = document.documentElement.getBoundingClientRect().bottom
+        let windowRelativeScrolled = document.documentElement.clientHeight + 100
+        if ((windowRelativeBottom <= windowRelativeScrolled) && this.state.scrolling === true) {
+            this.setState({
+                scrolling: false,
+                skip: (this.state.skip) + 10
+            })
+            this.onFollow()
+        } else if (((window.innerHeight + window.scrollY) >= (window.innerHeight + window.scrollY - 0.085)) && this.state.scrolling === false) {
+            // this.refs.child.setBottom()
+        }
+    }
+
+
+    async onFollow() {
+        let parent = this
+        let body =     {skip: this.state.skip, 
+            limit: this.state.limit}
+        await fetch(myConstClass.API_URL + '/messages/get/all', {
+            method: "POST",
+            headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
+            body:JSON.stringify(body)
+        })
+        .then(res => res.json())
+        .then(json => {
+            if (json.status !== false) {
+                for (let key in json.data) {
+                    parent.state.messages.push(json.data[key])
+                }
+                parent.setState(prevState => ({
+                    messages: prevState.messages,
+                    scrolling: true
+                }))
+                // parent.setState({messages: json.data})
+            }
+        })
+    }
+
+
 
      async getAll() {
         let parent = this
         let body =     {skip: this.state.skip, 
             limit: this.state.limit}
-        await fetch(myConstClass.API_URL + '/messages/getById/' + this.state.id, {
+        await fetch(myConstClass.API_URL + '/messages/get/all', {
             method: "POST",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
             body:JSON.stringify(body)
@@ -253,51 +240,18 @@ export default class HomePage extends Component {
         })
     }
 
-    onLoadSearch() {
-        let parent = this
-        parent.setState({
-            name: '',
-            username: '',
-        })
-        let username = this.props.match.params.username
-        fetch(myConstClass.API_URL + '/users/getByUsername/view/' + username, {
-            method: "GET",
-            headers: {"Content-Type": "application/json", 'auth-token': localStorage.getItem('auth-token')},
-        })
-        .then(res => res.json())
-        .then(json => {
-            if (json.status  === false && json.rec === true) {
-                document.getElementById("waller").style.display = "none"
-                parent.setState({
-                    secondClass: 'is-hidden',
-                    hiddenClass: 'column is-7 is-whole ',
-                    mainClass: 'is-hidden'
-                })
-            } else if (json.status === true) {
-                parent.setState({
-                    name: json.data[0].name,
-                    username: json.data[0].username,
-                    id: json.data[0]._id
-                })
-             
-                document.getElementById("waller").style.display = "none"
-                this.onCheck()
-                this.getAll()
-                this.getCount()
-
-            } else {
-                window.location = '/'
-            }
-        })
-    }
-
     async onLoad() {
         let parent = this
+
         let token = this.state.token
+        
         if (!token) {
-            window.location = '/'
+            this.setState({
+                notLogged: '/'
+            })
             return 
         }
+
         fetch(myConstClass.API_URL + '/users/get/own', {
             method: "GET",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
@@ -305,18 +259,21 @@ export default class HomePage extends Component {
         .then(res => res.json())
         .then(json => {
             if (json.status  === false) {
-                window.location = "/"
+                this.setState({
+                    notLogged: '/'
+                })
             } else {
                 parent.setState({
                     loading: false,
                     defaultBody: "columns has-text-centered",
-                    // name: json.data.name,
-                    // username: json.data.username,
+                    name: json.data.name,
+                    username: json.data.username,
                     token: this.state.token,
-                    currentid: json.data._id,
-                    mywall: '/profile/' + json.data.username
+                    user_id: json.data._id,
+                    mywall: this.state.mywall + json.data.username
                 })
-                // this.getAll()
+                this.getCount()
+                this.getAll()
                 document.getElementById("waller").style.display = "none"
             }
         })
@@ -325,7 +282,7 @@ export default class HomePage extends Component {
   
 
     async getCount() {
-        await fetch(myConstClass.API_URL + '/messages/count/' + this.state.id, {
+        await fetch(myConstClass.API_URL + '/messages/count/' + this.state.user_id, {
             method: "GET",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
         })
@@ -366,7 +323,7 @@ export default class HomePage extends Component {
    
             let media = "media-right is-hidden"
             let nav = "level is-mobile is-hidden"
-            if (messages.user_id === this.state.currentid) {
+            if (messages.user_id === this.state.user_id) {
                 media = "media-right"
                 nav = "level is-mobile"
             } 
@@ -380,7 +337,9 @@ export default class HomePage extends Component {
 
     onLogout() {
         localStorage.removeItem("auth-token")
-        window.location = "/"
+        this.setState({
+            notLogged: '/'
+        })
     }
 
     async onDelete(id) {
@@ -411,7 +370,7 @@ export default class HomePage extends Component {
                         })
                         Swal.fire(
                         'Deleted!',
-                        'Your post has been deleted.',
+                        'Your file has been deleted.',
                         'success'
                         )
                     } else {
@@ -430,6 +389,10 @@ export default class HomePage extends Component {
     }
 
     render() {
+        if (this.state.notLogged) {
+            return <Redirect to={this.state.notLogged} />
+        }
+        
         return (
             
             <div className="container is-fluid ">
@@ -442,16 +405,8 @@ export default class HomePage extends Component {
                 <div className={this.state.defaultBody}>
                     <div className="column is-1 ">
                     </div>
-                    <div className={this.state.hiddenClass}>
-                        <div className="card is-whole ">
-                            <div className="card-content  is-whole">
-                                <p className="subtitle is-mt-10">
-                                    No user found.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={this.state.secondClass}>
+
+                    <div className="column is-2 is-mt-5 ">
                         <div className="card">
                             <div className="card-content">
                                 <p className="title">
@@ -463,7 +418,7 @@ export default class HomePage extends Component {
                         <div className="card is-mt-10">
                             <div className="card-content">
                                 <p className="subtitle">
-                                    Searched User
+                                    Current User
                                 </p>
                                 <img src={require('../resources/images/hash.png')} alt="Freedom" />
 
@@ -487,10 +442,10 @@ export default class HomePage extends Component {
                         </div>
                     </div>
                     
-                    <div className={this.state.mainClass}>
+                    <div className="column is-5 is-paddingles is-mt-5">
                         <div className="card">
                             <div className="card-content">
-                                <article className={this.state.textareaClass}>
+                                <article className="media ">
                                     <figure className="media-left">
                                         <p className="image is-64x64">
                                         <img src={require('../resources/images/hash.png')} alt="Freedom" />
@@ -518,23 +473,22 @@ export default class HomePage extends Component {
                                     </div>
                                 </article>
 
+
                                 { this.messageList() }
                                 <p> No more messages.</p>
                             </div>
                         </div>
-                        
                     </div>
 
                     <div className="column is-3">
 
-                    <Search />
-
+                
+                        <Search />
 
                         <div className="card is-mt-10">
                             <div className="card-content">
                                 <span className="subtitle is-mb-10">Side Wall</span>
-                                <Link to="/home"> <button className="button is-fullwidth"> <i className="fas fa-home is-pr-5"></i> Back Home</button></Link>
-                                 <button onClick={this.myWall} className="button is-fullwidth"> <i className="fas fa-id-badge is-pr-5"></i> My Wall</button>
+                                <Link to={this.state.mywall} > <button className="button is-fullwidth"> <i className="fas fa-id-badge is-pr-5"></i> My Wall</button> </Link>
                                 <Link to="/settings"> <button className="button is-fullwidth"> <i className="fas fa-cogs  is-pr-5"></i> Settings</button></Link>
                                 <button className="button is-fullwidth" onClick={this.onLogout}> <i className="fas fa-sign-out-alt is-pr-5"></i> Logout</button>
                             </div>

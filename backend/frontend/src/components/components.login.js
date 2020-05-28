@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
+
 
 export default class LoginPage extends Component {
 
@@ -18,7 +20,8 @@ export default class LoginPage extends Component {
             usernameErr: '',
             passwordErr: '',
             usernameClass: 'input',
-            passwordClass: 'input'
+            passwordClass: 'input',
+            redirect: null
         }
 
         console.log(myConstClass.TEST)
@@ -29,7 +32,6 @@ export default class LoginPage extends Component {
             [e.target.id]: e.target.value
         })
     }
-
     async onSubmit(e) {
         e.preventDefault(); 
         var parent = this
@@ -38,7 +40,7 @@ export default class LoginPage extends Component {
             password: this.state.password
         }
 
-         fetch(myConstClass.API_URL + "/login", {
+         fetch("/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(user)
@@ -57,7 +59,9 @@ export default class LoginPage extends Component {
                 })
             } else {
                 localStorage.setItem("auth-token", json.token)
-                window.location = '/home'
+                parent.setState({
+                    redirect: '/home'
+                })
             }
         })
     }
@@ -72,6 +76,9 @@ export default class LoginPage extends Component {
     }
 
     render() {
+        if (this.state.redirect) {
+            return <Redirect to={this.state.redirect} />
+        }
         return (
             <div className="container is-fluid ">
                 <div className="columns">

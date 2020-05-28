@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import Setting from './components.setting'
 import Search from './components.search'
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 
 
@@ -71,7 +72,8 @@ export default class SettingPage extends Component {
             skip: 0,
             limit: 10,
             setting: false,
-            mywall: ''
+            mywall: '',
+            goOut: null
         }
 
   
@@ -178,7 +180,9 @@ export default class SettingPage extends Component {
         let token = this.state.token
         
         if (!token) {
-            window.location = '/'
+            this.setState({
+                goOut: '/'
+            })
             return 
         }
 
@@ -189,7 +193,9 @@ export default class SettingPage extends Component {
         .then(res => res.json())
         .then(json => {
             if (json.status  === false) {
-                window.location = "/"
+                this.setState({
+                    goOut: '/'
+                })
             } else {
                 parent.setState({
                     loading: false,
@@ -240,7 +246,9 @@ export default class SettingPage extends Component {
 
     onLogout() {
         localStorage.removeItem("auth-token")
-        window.location = "/"
+        this.setState({
+            goOut: '/'
+        })
     }
 
     async onDelete(id) {
@@ -290,6 +298,9 @@ export default class SettingPage extends Component {
     }
 
     render() {
+        if (this.state.goOut) {
+            return <Redirect to={this.state.goOut} />
+        }
         return (
             
             <div className="container is-fluid ">

@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import myConstClass from './constant/constant'
 import Swal from 'sweetalert2'
+import { Redirect } from "react-router-dom";
 
 export default class  LoginPage extends Component {
 
@@ -20,7 +21,8 @@ export default class  LoginPage extends Component {
             usernameErr: '',
             passwordErr: '',
             password2Err: '',
-            nameErr: ''
+            nameErr: '',
+            notLogin: null
         }   
 
         this.onChangeInput = this.onChangeInput.bind(this)
@@ -94,7 +96,9 @@ export default class  LoginPage extends Component {
                 timer: 2200,
                 showConfirmButton: false,
             }).then((result) => {
-                window.location = "/"
+                this.setState({
+                    notLogin: '/'
+                })
             })
         }
        })
@@ -114,6 +118,9 @@ export default class  LoginPage extends Component {
 
 
     render() {
+        if (this.state.notLogin) {
+            return <Redirect to={this.state.notLogin} />
+        }
         return (
             <div className="container is-fluid ">
                 <div className="columns">

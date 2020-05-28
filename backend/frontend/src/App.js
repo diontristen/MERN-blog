@@ -20,7 +20,7 @@ function App() {
       <Route path="/home" exact component={HomePage}/>
       <Route path="/profile/:username" exact component={ProfilePage}/>
       <Route path="/settings" exact component={SettingsPage}/>
-      <Route path="/search/:username" exact component={SearchPage}/>
+      <Route path="/search/:username?" exact component={SearchPage}/>
     </Router>
   );
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import myConstClass from './constant/constant'
+import { Redirect } from "react-router-dom";
 
 const List = liv => (
     <article onMouseOver={() => {liv.testing(liv.data.name, liv.data.username)}} onClick={()=> {liv.onClick(liv.data.username)}} className="media is-marginless is-mb-5  is-p-75rem search">
@@ -39,7 +40,8 @@ class SearchBig extends Component {
             skip: '',
             lastCount: 0,
             bottom: 'Loading...',
-            users: []
+            users: [],
+            reProfile: null,
         }
     }
 
@@ -52,6 +54,9 @@ class SearchBig extends Component {
     }
     onLoad() {
         let username = this.props.parameter
+        if (username === undefined) {
+            username = ""
+        }
         this.setState({
             searchVal: username
         })
@@ -65,7 +70,9 @@ class SearchBig extends Component {
     }
     
     onClick(data) {
-        window.location = '/profile/' + data
+        this.setState({
+            reProfile: '/profile/' + data
+        })
     }
 
     setBottom() {
@@ -141,7 +148,6 @@ class SearchBig extends Component {
                     skip: '10'
                 })
             } else {
-                // window.location = '/'
             }
         })
         } else {
@@ -169,6 +175,9 @@ class SearchBig extends Component {
         document.getElementById('searchVal').value = ''
     }
     render() {
+        if (this.state.reProfile) {
+            return <Redirect to={this.state.reProfile} />
+          }
         return (
         <div>
             <div className="card  is-mt-10">

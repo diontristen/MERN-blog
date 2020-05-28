@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { BallClipRotateMultiple } from 'react-pure-loaders';
 import Swal from 'sweetalert2'
 import Search from './components.search'
+import myConstClass from './constant/constant'
 
 
 const List = liv => (
@@ -122,7 +123,7 @@ export default class HomePage extends Component {
     }
 
     async submitMessage(message, URI, prefix, suffix) {
-        await fetch(process.env.REACT_APP_API_URL + URI, {
+        await fetch(myConstClass.API_URL + URI, {
             method: "POST",
             headers: {"Content-Type": "application/json" , 'auth-token': this.state.token},
             body: JSON.stringify(message)
@@ -198,7 +199,7 @@ export default class HomePage extends Component {
         let parent = this
         let body =     {skip: this.state.skip, 
             limit: this.state.limit}
-        await fetch(process.env.REACT_APP_API_URL + '/messages/get/all', {
+        await fetch(myConstClass.API_URL + '/messages/get/all', {
             method: "POST",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
             body:JSON.stringify(body)
@@ -224,7 +225,7 @@ export default class HomePage extends Component {
         let parent = this
         let body =     {skip: this.state.skip, 
             limit: this.state.limit}
-        await fetch(process.env.REACT_APP_API_URL + '/messages/get/all', {
+        await fetch(myConstClass.API_URL + '/messages/get/all', {
             method: "POST",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
             body:JSON.stringify(body)
@@ -247,7 +248,7 @@ export default class HomePage extends Component {
             return 
         }
 
-        fetch(process.env.REACT_APP_API_URL + '/users/get/own', {
+        fetch(myConstClass.API_URL + '/users/get/own', {
             method: "GET",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
         })
@@ -275,7 +276,7 @@ export default class HomePage extends Component {
   
 
     async getCount() {
-        await fetch(process.env.REACT_APP_API_URL + '/messages/count/' + this.state.user_id, {
+        await fetch(myConstClass.API_URL + '/messages/count/' + this.state.user_id, {
             method: "GET",
             headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
         })
@@ -344,7 +345,7 @@ export default class HomePage extends Component {
             confirmButtonText: 'Yes, delete it!'
           }).then(async (result) => {
             if (result.value) {
-                await fetch(process.env.REACT_APP_API_URL + '/messages/delete/' + id, {
+                await fetch(myConstClass.API_URL + '/messages/delete/' + id, {
                     method: "GET",
                     headers: {"Content-Type": "application/json", 'auth-token': this.state.token},
                 })
