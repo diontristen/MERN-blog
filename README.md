@@ -3,7 +3,7 @@ Note: This application is still work in progress but it serves the basic CRUD fu
 This web application (backend) is just a simple application to test and to learn how to make it using MERN.
 
 ### CHANGE MONGO_URI -> /backend/middleware/middleware.env.js
-
+https://freedom-wall.herokuapp.com/home
 
 # MERN
  -  MongoDB - I used this as my database.
